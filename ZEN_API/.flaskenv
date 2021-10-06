@@ -1,2 +1,2 @@
-FLASK_APP = Zen_API
-FlASK_ENV = Development
+FLASK_APP=ZenAPI
+FlASK_ENV=development
