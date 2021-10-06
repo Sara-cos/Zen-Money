@@ -2,7 +2,7 @@
 
 
 ## For embedding the chatbot
-
+```
 <script>
   window.watsonAssistantChatOptions = {
       integrationID: "46c9ef0c-a7ba-4b86-8c60-52f139613bbe", // The ID of this integration.
@@ -18,3 +18,4 @@
     document.head.appendChild(t);
   });
 </script>
+```
