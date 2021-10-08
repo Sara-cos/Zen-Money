@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang = "en">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatiable" content="ie=edge" />
+	<script src="https://cdn.plot.ly/plotly-2.5.1.min.js"></script>
+	<title>Financial Analysis</title>
+
+
+</head>
+<body>
+
+	<h1>Financial Analysis</h1>
+	<p>
+		Total Asset : <span id = "TAssets"></span>
+	</p>
+    
+    <!-- <div id="myDiv" style="width:100%;max-width:700px"></div> -->
+    <div id='TA_BAR' style="width: 100%"; max-width:100px"></div>
+    <h5>Credit Card</h5>
+    <div id='liability_Month_Due' style="width: 100%"; max-width:100px"></div>
+    <div id='liability_Pre_Due' style="width: 100%"; max-width:100px"></div>
+    <div id='liability_Total_Due' style="width: 100%"; max-width:100px"></div>
+    <div id='liability_Financial_Charges' style="width: 100%"; max-width:100px"></div>
+    <div id='credit_summary' style="width: 100%"; max-width:700px"></div>
+    <div id='Trade_Value' style="width: 100%"; max-width:700px"></div>
+    <div id='investment' style="width: 100%"; max-width:700px"></div>
+    <div id='pie_invest' style="width: 100%"; max-width:700px"></div>
+
+    <div id='deposit_bar' style="width: 100%"; max-width:700px"></div>
+    <div id='TD_bar' style="width: 100%"; max-width:700px"></div>
+    <div id='RD_bar' style="width: 100%"; max-width:700px"></div>
+    <div id='ppf_bar' style="width: 100%"; max-width:700px"></div>
+    <div id='epf_bar' style="width: 100%"; max-width:700px"></div>
+
+
+    
+
+
+
+	<script>
+		const api_url = "http://127.0.0.1:5000/"
+		
+		async function get_total_asset() {
+		    const response = await fetch(api_url + "total_asset");
+		    const data = await response.json();
+		    console.log(data);
+		    TA = data.TA
+
+		    document.getElementById('TAssets').textContent = TA;
+
+		    var TA_bar = [
+		    {
+		    	type: "indicator",
+		    	mode: "number+gauge",
+		    	gauge: { shape: "bullet" },
+		    	value: TA,
+		    	domain: { x: [0, 1], y: [0, 1] },
+		    	title: { text: "TOTAL ASSETS" }
+            }]
+
+            //Change the layout according to the app
+            var layout = { width: 800, height: 200 }; 
+
+		    Plotly.newPlot('TA_BAR', TA_bar,layout, {displayModeBar: false});
+		}
+
+	    async function get_liabilities() {
+	    	const response = await fetch(api_url + "liabilities");
+		    const data = await response.json();
+		    console.log(data);
+
+		    CC_Due_Date = data.Due_Date
+		    CC_Financial_Charges = data.Financial_Charges
+		    CC_Month_Due = data.Month_Due
+		    CC_Pre_Month_Due = data.Pre_Month_Due
+		    CC_Total_Due = data.Total_Due
+
+		    var liability_Month_Due = [
+		    {
+		    	type: "indicator",
+		    	mode: "number",
+		    	value: CC_Month_Due,
+		    	domain: {x : [0.5, 0], y :[0, 0.5]},
+		    	title: {
+		    		text:
+		    		"Present Month Due"
+		    	},
+
+		    }]
+
+            var liability_Pre_Due = [
+            {
+            	type: "indicator",
+		    	mode: "number",
+		    	value: CC_Pre_Month_Due,
+		    	domain: {x : [0.5, 0], y :[0, 0.5]},
+		    	title: {
+		    		text:
+		    		"Previous Month Due"
+		    	},
+            }]
+
+		   
+		    var liability_Total_Due = [
+		    {
+		    	type: "indicator",
+		    	mode: "number",
+		    	value: CC_Total_Due,
+		    	domain: {x : [0.5, 0], y :[0, 0.5]},
+		    	title: {
+		    		text:
+		    		"Total Due"
+		    	},
+
+		    }]
+
+		    var liability_Financial_Charges = [
+		    {
+		    	type: "indicator",
+		    	mode: "number",
+		    	value: CC_Financial_Charges,
+		    	domain: {x : [0.5, 0], y :[0, 0.5]},
+		    	title: {
+		    		text:
+		    		"Financial_Charges"
+		    	},
+		    }]
+
+		    var layout = {
+		    	paper_bgcolor: "lightgray",
+		    	width: 220,
+		    	height: 60,
+		    	margin: { t: 0.3, r: 0.3, l: 0.3, b: 0.3 }
+            };
+
+            Plotly.newPlot('liability_Month_Due', liability_Month_Due, layout,{displayModeBar: false});
+            Plotly.newPlot('liability_Pre_Due', liability_Pre_Due, layout,{displayModeBar: false});
+            Plotly.newPlot('liability_Total_Due', liability_Total_Due, layout,{displayModeBar: false});
+            Plotly.newPlot('liability_Financial_Charges', liability_Financial_Charges, layout,{displayModeBar: false});
+
+		    
+		}
+
+		async function get_credit_debit() {
+	    	const response = await fetch(api_url + "credit_debit");
+		    const data = await response.json();
+		    console.log(data);
+		    // console.log(data.credit_amount);
+
+
+		    Credit_debit_time = data.Credit_debit_time
+		    credit_amount = data.credit_amount
+		    debit_amount = data.debit_amount
+
+		    var trace1 = {
+		    	mode: 'lines+markers',
+		    	name: 'Credit',
+		    	x: Credit_debit_time,
+		    	y: credit_amount,
+		    	connectgaps: true
+
+		    };
+
+		    var trace2 = {
+		    	mode: 'lines+markers',
+		    	name: 'Debit',
+		    	x: Credit_debit_time,
+		    	y: debit_amount,
+		    	connectgaps: true
+		    }
+
+		    var credit_summary = [trace1,trace2];
+
+		    var layout = {
+		    	title: 'Credit Summary'
+		    };
+
+		    Plotly.newPlot('credit_summary', credit_summary, layout,{displayModeBar: false});
+	    }
+
+	    async function get_trade_value() {
+	    	const response = await fetch(api_url + "trade_value");
+		    const data = await response.json();
+		    console.log(data);
+
+		    trade_txn_date = data.trade_txn_date
+
+		    bonds_invest_value = data.bonds_invest_value
+		    bonds_trade_value = data.bonds_trade_value
+
+		    equities_trade_value = data.equities_trade_value
+		    equities_invest_value = data.equities_invest_value
+
+		    govt_securities_invest_value = data.govt_securities_invest_value
+		    govt_securities_trade_value = data.govt_securities_trade_value
+
+		    nps_invest_value = data.nps_invest_value
+		    mf_invest_value = data.mf_invest_value
+		    etf_invest_value = data.etf_invest_value
+
+		    var trace1 = {
+		        type : 'bar',
+		    	name : "Bonds",
+		    	x : trade_txn_date,
+		    	y : bonds_trade_value,
+		    	marker: {
+		    		color: 'rgb(204,204,204)',
+		    		opacity: 0.5
+		    	}
+
+
+		    };
+
+		    var trace2 = {
+		    	type : 'bar',
+		    	name : "Equities",
+		    	x : trade_txn_date,
+		    	y : equities_trade_value
+		    };
+
+		    var trace3 = {
+		    	type : 'bar',
+		    	name: "Govt Securities",
+		    	x : trade_txn_date,
+		    	y : govt_securities_trade_value,
+		    	marker: {
+		    		color: 'rgb(49,130,189)',
+		    		opacity: 0.7,
+		    	}
+		    }
+
+		    var Trade_Value = [trace1,trace2,trace3];
+
+		    var layout = {
+		    	title: 'Trade Value',
+		    	barmode: 'group'
+		    };
+
+		    Plotly.newPlot('Trade_Value', Trade_Value, layout,{displayModeBar: false});
+
+
+		    var investment = [
+		    {
+		    	x: ['Bonds', 'Equities', 'Govt Securities', 'Exchange Traded Fund', 'NPS Invest', 'Mutual Funds'],
+		    	y: [bonds_invest_value, equities_invest_value, govt_securities_invest_value, etf_invest_value, nps_invest_value, mf_invest_value ],
+		    	type: 'bar',
+		    	marker: {
+		    		color: 'rgb(49,130,180)',
+		    		opacity: 0.7,
+		    	}
+		    }]
+
+		    var layout = {
+		    	title: 'Investment Value'
+		    };
+
+		    Plotly.newPlot('investment', investment, layout,{displayModeBar: false});
+
+
+		    var ultimateColors = ['rgb(120, 75, 126)', 'rgb(140, 36, 37)', 'rgb(34, 53, 101)', 'rgb(36, 55, 57)', 'rgb(36, 73, 147)','rgb(146, 123, 21)']
+		    var pie_invest = [{
+		    	type: "pie",
+		    	values: [bonds_invest_value, equities_invest_value, govt_securities_invest_value, etf_invest_value, nps_invest_value, mf_invest_value ],
+		    	labels: ["Bonds", "Equities", "Govt Sec", "ETF", "NPS", "MF",],
+		    	textinfo: "label+percent",
+		    	insidetextorientation: "radial",
+		    	marker: {
+		    		opacity: 0.3,
+		    		colors: ultimateColors
+
+		    	},
+		    }]
+		    var layout = [{
+		    	height: 700,
+		    	width: 700
+		    }]
+
+		    Plotly.newPlot('pie_invest', pie_invest, layout,{displayModeBar: false});
+
+
+
+
+		}
+
+
+		async function get_deposits() {
+	    	const response = await fetch(api_url + "deposits");
+		    const data = await response.json();
+		    console.log(data);
+
+		    RD_credit_amount = data.RD_credit_amount
+		    RD_credit_debit_time = data.RD_credit_debit_time
+		    RD_debit_amount = data.RD_debit_amount
+		    TD_credit_amount = data.TD_credit_amount
+		    TD_credit_debit_time = data.TD_credit_debit_time
+		    TD_debit_amount = data.TD_debit_amount
+		    deposit_credit_amount = data.deposit_credit_amount
+		    deposit_credit_debit_time = data.deposit_credit_debit_time
+		    deposit_debit_amount = data.deposit_debit_amount
+
+		    deposit_credit_amount_neg = data.deposit_credit_amount_neg
+		    TD_credit_amount_neg = data.TD_credit_amount_neg
+		    RD_credit_amount_neg = data.RD_credit_amount_neg
+
+		    var deposit_bar = [
+		    {
+		    	type: 'bar',
+		    	x: deposit_credit_debit_time,
+		    	y: deposit_credit_amount,
+		    	base: deposit_credit_amount_neg,
+		    	hovertemplate: '%{base}',
+		    	marker: {
+		    		color: 'red',
+		    		opacity: 0.7
+		    	},
+		    	name: 'expenses'
+		    },
+		    {
+		    	type: 'bar',
+		    	x: deposit_credit_debit_time,
+		    	y: deposit_debit_amount,
+		    	base: 0,
+		    	marker: {
+		    		color: 'rgb(55, 83, 109)',
+		    		opacity:0.7
+		    	},
+		    	name: 'revenue'
+		    }]
+
+		    var layout = {
+		    	title: 'Deposits',
+		    };
+
+		    Plotly.newPlot('deposit_bar', deposit_bar, layout, {displayModeBar: false});
+
+
+		    var RD_bar = [
+		    {
+		    	type: 'bar',
+		    	x: RD_credit_debit_time,
+		    	y: RD_credit_amount,
+		    	base: RD_credit_amount_neg,
+		    	hovertemplate: '%{base}',
+		    	marker: {
+		    		color: 'red',
+		    		opacity:0.7
+		    	},
+		    	name: 'expenses'
+		    },
+		    {
+		    	type: 'bar',
+		    	x: RD_credit_debit_time,
+		    	y: RD_debit_amount,
+		    	base: 0,
+		    	marker: {
+		    		color: 'rgb(49,130,189)',
+		    		opacity:0.7
+		    	},
+		    	name: 'revenue'
+		    }]
+
+		    var layout = {
+		    	title: 'Recurring Deposits',
+		    };
+
+		    Plotly.newPlot('RD_bar', RD_bar, layout, {displayModeBar: false});
+
+
+
+		    var TD_bar = [
+		    {
+		    	type: 'bar',
+		    	x: TD_credit_debit_time,
+		    	y: TD_credit_amount,
+		    	base: TD_credit_amount_neg,
+		    	hovertemplate: '%{base}',
+		    	marker: {
+		    		color: 'red',
+		    		opacity:0.7
+		    	},
+		    	name: 'expenses'
+		    },
+		    {
+		    	type: 'bar',
+		    	x: TD_credit_debit_time,
+		    	y: TD_debit_amount,
+		    	base: 0,
+		    	marker: {
+		    		color: 'rgb(180,140,180)',
+		    		opacity:0.7
+		    	},
+		    	name: 'revenue'
+		    }]
+
+		    var layout = {
+		    	title: 'Term Deposits',
+		    };
+
+		    Plotly.newPlot('TD_bar', TD_bar, layout, {displayModeBar: false});
+
+
+		}
+
+		async function get_pensions() {
+			const response = await fetch(api_url + "pension");
+		    const data = await response.json();
+		    console.log(data);
+
+		    epf_emp_amount = data.epf_emp_amount
+		    epf_pension_amount = data.epf_pension_amount
+		    epf_txn_date = data.epf_txn_date
+		    ppf_amount = data.ppf_amount
+		    ppf_balance = data.ppf_balance
+		    ppf_txn_date = data.ppf_txn_date
+
+		    var trace1 = {
+		    	x: ppf_txn_date,
+		    	y: ppf_balance,
+		    	type: 'scatter',
+		    	name: 'Balance'
+		    };
+
+		    var trace2 = {
+		    	x: ppf_txn_date,
+		    	y: ppf_amount,
+		    	type: 'bar',
+		    	name: 'Amount',
+		    	marker: {
+		    		color: 'rgb(180,160,17)',
+		    		opacity: 0.7,
+		    	},
+		    };
+
+		    var ppf_bar = [trace1, trace2];
+
+		    var layout = {
+		    	title: 'Provident Fund',
+		    };
+
+
+		    Plotly.newPlot('ppf_bar', ppf_bar, layout,  {displayModeBar: false});
+
+
+		    var trace1 = {
+		    	x: epf_txn_date,
+		    	y: epf_pension_amount,
+		    	type: 'scatter',
+		    	name: 'Pension Fund',
+		    	marker: {
+		    		color: 'rgb(49,130,189)'
+		    	},
+		    };
+
+		    var trace2 = {
+		    	x: epf_txn_date,
+		    	y: epf_emp_amount,
+		    	type: 'bar',
+		    	name: 'Employee Deposit',
+		    	marker: {
+		    		color: 'rgb(180,160,179)',
+		    		opacity: 0.7,
+		    	},
+		    };
+
+		    var epf_bar = [trace1, trace2];
+
+		    var layout = {
+		    	title: 'Employee Provident Fund',
+		    };
+
+
+		    Plotly.newPlot('epf_bar', epf_bar, layout,  {displayModeBar: false});
+
+
+		}
+
+	    
+	    
+
+
+		
+         
+
+
+	get_total_asset();
+	get_liabilities();
+	get_credit_debit();
+	get_trade_value();
+	get_deposits();
+	get_pensions();
+
+
+	</script>
+</body>
