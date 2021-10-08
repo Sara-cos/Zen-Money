@@ -54,8 +54,14 @@ flask run
 ```
 
 Once the app is running, open the analytics.html
-
-
+For local deployment url = 
+```
+const api_url = "http://127.0.0.1:5000/"
+```
+Heroku deployed 
+```
+const api_url = "https://rest-api-zen.herokuapp.com/"
+```
 
 
 
