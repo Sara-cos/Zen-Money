@@ -19,3 +19,52 @@
   });
 </script>
 ```
+
+## For running the API locally
+
+Create a virtual enviornment in cmd
+
+```
+python -m venv [env name]
+```
+Then
+```
+[env name]\scripts\activate
+```
+
+git clone the repository
+
+cd REST_API
+
+```
+pip install -r requirements.txt
+```
+
+All the packages are now installed in the virtual env
+
+To see the list of packages, one can do
+```
+pip list
+```
+
+
+To run
+```
+flask run
+```
+
+Once the app is running, open the analytics.html
+
+
+
+
+
+
+To deactivate the enviornment
+```
+deactivate
+
+```
+
+
+
